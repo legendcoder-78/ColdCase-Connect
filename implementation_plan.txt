@@ -1,0 +1,65 @@
+If you want to use real data but keep the architecture simple (no massive web apps, no heavy cloud deployments), you are in the "Advanced Prototype" zone. You will stick to the **Streamlit + FastAPI + ChromaDB** stack we discussed, but change how you handle the database.
+
+Since real Indian FIRs and crime scene photos are strictly classified, you have to use **Open-Source Public Datasets**. To prove your concept works, you will use real crime data from open municipalities (usually US-based, as they publish incredibly detailed M.O. text) and pair it with real forensic/scene imagery.
+
+Here is your exact implementation plan to build a functioning prototype using real-world data.
+
+### **1. Sourcing the "Real" Data (The Workaround)**
+
+Because you need both text (M.O.) and images (crime scenes) to make your "Divergence Flag" work, you will build a fused dataset.
+
+**A. Real Text Data (The M.O. and Summaries)**
+
+* **Where to get it:** Go to Kaggle and download the **"Los Angeles (LAPD) Crime Data"** or **"Chicago Crime Dataset"**.
+* **Why use it:** Unlike basic datasets, these contain specific columns for *Premises Type*, *Weapon Used*, and *M.O. Codes* (e.g., "Suspect entered through unlocked window," "Victim bound with tape").
+* **Action:** Filter the massive CSV down to about 500–1,000 specific cases (e.g., only look at "Residential Burglaries" or "Assaults") to keep your local database fast.
+
+**B. Real Image Data (The Visual Context)**
+
+* **Where to get it:** Go to Kaggle and search for **"Places365 Dataset"** (for real images of alleys, broken windows, bedrooms, storefronts) or specific forensic datasets like **"Shoeprint Image Dataset"** or **"Weapon Classification Dataset"**.
+* **Action:** Write a simple Python script to randomly assign a relevant image from these datasets to your text cases based on the "Premises" or "Weapon" column. (e.g., If the LAPD text says the crime happened in a parking garage, attach a real image of a parking garage to that case ID).
+
+*Boom. You now have a highly realistic, multimodal database of 1,000 cold cases.*
+
+---
+
+### **2. The Implementation Plan**
+
+#### **Phase 1: The Vectorization Pipeline (Days 1-2)**
+
+* **Tools:** Python, Pandas, `sentence-transformers` (SBERT), `transformers` (CLIP).
+* **The Task:**
+1. Load your newly fused CSV (Text + Image URL/Path).
+2. Write a `for` loop that runs the text through SBERT and the image through CLIP.
+3. Save the resulting vectors, along with the raw text and image paths, into your local **ChromaDB**.
+
+
+
+#### **Phase 2: The Core Logic & APIs (Days 3-4)**
+
+* **Tools:** FastAPI, Python `math` module.
+* **The Task:** Build three API endpoints in FastAPI:
+1. `POST /search`: Accepts a new image and a text string. Vectorizes them on the fly.
+2. `GET /retrieve`: Queries ChromaDB for the closest vector matches.
+3. `POST /analyze`: Calculates your Combined Match Score and the Divergence Delta ($\Delta = |S_{visual} - S_{text}|$). If the delta is $>40$, it flags it.
+
+
+
+#### **Phase 3: The LLM Integration (Day 5)**
+
+* **Tools:** Gemini API (or OpenAI API).
+* **The Task:** Inside your FastAPI backend, take the top match's text and the user's input text, and send them to the LLM with a strict prompt: *"Act as a forensic analyst. Read these two case summaries. In exactly 3 bullet points, explain the shared Modus Operandi (M.O.) between them."*
+
+#### **Phase 4: The Streamlit Interface (Day 6-7)**
+
+* **Tools:** Streamlit.
+* **The Task:** Build the user interface.
+* Create a clean sidebar for uploading the new crime scene image and typing the M.O.
+* Use `st.columns` to display the "New Case" next to the "Matched Historical Case" images side-by-side.
+* Use `st.warning` or `st.error` to flash a bright alert on the screen if your backend triggers the Divergence Flag (Staged Scene).
+
+
+
+By using real Kaggle datasets, your vector math will behave exactly as it would in a real police database, proving to anyone looking at your project that the underlying intelligence model actually works.
+
+Would you prefer to focus your dataset on a specific category—like homicides, burglaries, or vehicle thefts—to make the semantic text matching easier to demonstrate during your presentation?
