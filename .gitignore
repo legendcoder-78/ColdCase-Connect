@@ -1,0 +1,25 @@
+# Security
+.env
+
+# Virtual Environment
+venv/
+
+# Vector Database (Do not push massive DBs to GitHub!)
+cold_case_db/
+
+# Python Cache
+__pycache__/
+*.pyc
+
+# Downloaded Images (Optional, but good if folder is large)
+train/
+# Data Files (Crucial for GitHub's 100MB limit)
+*.csv
+*.json
+*.xlsx
+
+# Mac System Files (Optional but keeps your repo clean)
+.DS_Store
+
+# Logs
+*.log

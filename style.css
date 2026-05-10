@@ -1,0 +1,88 @@
+/* Midnight Tactical Theme Core */
+:root {
+    --bg-midnight: #0B0E14;
+    --card-bg: #151921;
+    --cyan-accent: #00D2FF;
+    --warning-red: #FF4B4B;
+    --border-dim: #2D343F;
+}
+
+body {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-dim) var(--bg-midnight);
+}
+
+/* Animations */
+@keyframes scan {
+    0% { top: 0; }
+    50% { top: 100%; }
+    100% { top: 0; }
+}
+
+@keyframes fade-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-red {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255, 75, 75, 0); }
+    50% { box-shadow: 0 0 20px 2px rgba(255, 75, 75, 0.3); }
+}
+
+.scan-active {
+    display: block !important;
+    animation: scan 2s infinite linear;
+}
+
+.result-card {
+    animation: fade-up 0.5s ease-out forwards;
+}
+
+.divergence-alert {
+    animation: pulse-red 2s infinite;
+}
+
+/* Glassmorphism utility */
+.glass {
+    background: rgba(21, 25, 33, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-midnight);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--border-dim);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--cyan-accent);
+}
+
+/* Metric Rings */
+.metric-ring {
+    position: relative;
+    width: 60px;
+    height: 60px;
+}
+.metric-ring svg {
+    transform: rotate(-90deg);
+}
+.metric-ring circle {
+    fill: none;
+    stroke-width: 4;
+}
+.metric-ring .bg {
+    stroke: var(--border-dim);
+}
+.metric-ring .progress {
+    stroke: var(--cyan-accent);
+    stroke-dasharray: 176;
+    stroke-dashoffset: 176;
+    transition: stroke-dashoffset 1s ease-out;
+}
