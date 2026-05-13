@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import google.generativeai as genai
 from fastapi import FastAPI, File, Form, UploadFile, HTTPException
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from sentence_transformers import SentenceTransformer
 import chromadb
 from PIL import Image
@@ -30,11 +31,20 @@ app = FastAPI(title="ColdSync AI - Investigative Engine (Pro Dashboard Backend)"
 # This allows our local frontend (e.g., Port 5500) to communicate with this API
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # In production, replace with specific frontend URL
+    allow_origins=[
+        "http://127.0.0.1:5500",
+        "http://localhost:5500",
+        "http://[::]:5500"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# --- Static File Serving ---
+# This allows the browser to access images in the 'train' directory
+# via URLs like http://127.0.0.1:8000/train/...
+app.mount("/train", StaticFiles(directory="train"), name="train")
 
 # ---------------------------------------------------------
 # 1. Initialization: Models & Database Connection
@@ -48,8 +58,8 @@ image_model = SentenceTransformer('clip-ViT-B-32')
 
 print("--- Connecting to Persistent Vector Store ---")
 client = chromadb.PersistentClient(path="./cold_case_db")
-text_collection = client.get_or_create_collection(name="text_cases")
-image_collection = client.get_or_create_collection(name="image_cases")
+text_collection = client.get_or_create_collection(name="forensic_text")
+image_collection = client.get_or_create_collection(name="forensic_enhanced")
 
 # ---------------------------------------------------------
 # 2. Helper Functions
@@ -175,6 +185,16 @@ async def analyze_case(
             if combined_score < 15.0:
                 continue
 
+            # Clean up the image path for the web (Relative to project root)
+            web_image_path = data["image_path"]
+            if web_image_path:
+                # Convert './train/category/img.jpg' to 'train/category/img.jpg'
+                web_image_path = web_image_path.lstrip("./").lstrip("/")
+                if not web_image_path.startswith("train/"):
+                    # Ensure it starts with train/ if it was something else
+                    if "train/" in web_image_path:
+                        web_image_path = web_image_path[web_image_path.find("train/"):]
+
             raw_results.append({
                 "case_id": case_id,
                 "combined_score": round(combined_score, 2),
@@ -183,7 +203,7 @@ async def analyze_case(
                 "divergence_delta": round(divergence_delta, 2),
                 "divergence_flag": divergence_flag,
                 "text_summary": data["text_summary"],
-                "image_path": data["image_path"]
+                "image_path": web_image_path
             })
 
         # Sort by combined score descending

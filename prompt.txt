@@ -1,32 +1,19 @@
-Act as an expert Frontend Developer and UX Designer for a law enforcement tech platform. I am building Phase 4 of my Multi-Modal Cold Case Intelligence Platform. I need you to write the frontend web dashboard script named `app.py` using Streamlit.
+Act as a Full-Stack Developer. My ColdSync AI dashboard is failing to render 'Archived Match' images (they show broken icons), although the 'Input Evidence' renders fine. 
 
-Context:
-My FastAPI backend is currently running locally at `http://127.0.0.1:8000`. The API has an endpoint at `POST /analyze` that accepts a `text_summary` (form data) and a `scene_image` (file). It returns a JSON object containing `status`, `forensic_synthesis` (a string of AI-generated bullet points), and `top_matches` (a list of dictionaries containing case_id, text_summary, text_score, visual_score, combined_score, divergence_delta, divergence_flag, and image_path).
+I need to fix the Static File Serving between FastAPI and the HTML/JS frontend.
 
-Requirements for `app.py`:
-1. Page Config & CSS:
-   - Set the page title to "ColdSync AI | Investigative Engine", layout to "wide", and page icon to "🔍".
-   - Add a main title header on the page: "🔍 ColdSync AI: Multi-Modal Cold Case Intelligence".
+Requirements:
 
-2. Sidebar (The Input Zone):
-   - Create a sidebar for the investigator to input a new case.
-   - Include an `st.text_area` for the "New Case M.O. / Summary".
-   - Include an `st.file_uploader` for the "Upload Crime Scene Photo" (accepting png, jpg, jpeg).
-   - Add a prominent button: `st.button("Run ColdSync AI", type="primary")`.
+1. Update main.py:
+   - Import 'StaticFiles' from 'fastapi.staticfiles'.
+   - Add 'app.mount("/train", StaticFiles(directory="train"), name="train")' immediately after the CORS middleware. This will allow the browser to access images via 'http://127.0.0.1:8000/train/...'.
 
-3. The API Connection & Loading State:
-   - When the button is clicked (and both inputs exist), display an `st.spinner("Cross-referencing multimodal database and generating forensic synthesis...")`.
-   - Use the `requests` library to send a POST request to `http://127.0.0.1:8000/analyze`. Pass the text as `data` and the uploaded file as `files`.
+2. Update the /analyze Endpoint in main.py:
+   - Ensure the 'image_path' returned in the JSON results is relative to the project root (e.g., "train/street/image_01.jpg"). 
 
-4. Main Dashboard (The Results Zone):
-   - Upon a successful response, display a large subheader for "AI Forensic Synthesis". Inside an `st.info` or `st.success` box, render the `forensic_synthesis` text returned from the API.
-   - Iterate through the `top_matches`. For each match:
-     - Create an `st.divider()`.
-     - Create an `st.subheader` displaying the Case ID and the "Combined Score: X%".
-     - **CRITICAL UI ELEMENT:** If the `divergence_flag` for that match is True, instantly display a massive `st.error("🚨 DIVERGENCE FLAG TRIGGERED: Visual evidence severely conflicts with textual M.O. High probability of staged scene or copycat.")`.
-     - Use `st.columns` to create a 3-column layout (e.g., `col1, col2, col3 = st.columns([1, 1, 1])`). 
-       - Column 1: Display the original uploaded image (New Case) with the caption "New Case Evidence".
-       - Column 2: Display the historical match image using `st.image` pointing to the matched `image_path` from the JSON with the caption "Historical Match Evidence".
-       - Column 3: Display the historical case's `text_summary`. Below that, use `st.metric` to cleanly display the `text_score` and `visual_score` so judges can see the mathematical breakdown.
+3. Update the JavaScript (script.js or index.html):
+   - Locate where the 'Archived Match' <img> tag is created.
+   - Update the 'src' attribute so it prefixes the backend URL. 
+   - Example: imgElement.src = `http://127.0.0.1:8000/${match.image_path}`;
 
-Output ONLY the Python code for `app.py`. Ensure it looks highly professional, handles API connection errors gracefully, and is well-commented.
+Please provide the specific code blocks for main.py and the JavaScript rendering logic to ensure these archived images appear correctly.

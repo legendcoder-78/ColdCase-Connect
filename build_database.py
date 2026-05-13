@@ -1,75 +1,74 @@
 import pandas as pd
 from sentence_transformers import SentenceTransformer
 import chromadb
-from chromadb.config import Settings
 from PIL import Image
 from tqdm import tqdm
 import os
 
 """
-Phase 1: Multi-Modal Cold Case Intelligence Platform - Vectorization Pipeline
-This script processes structured case data from a CSV, generates embeddings for both
-textual descriptions and crime scene images, and stores them in a local ChromaDB instance.
+Phase 2: Forensic-Enhanced Cold Case Intelligence Platform - Vectorization Pipeline
+This script processes the fused dataset, generates gritty image embeddings using CLIP,
+and text embeddings using SBERT, storing them in a refreshed ChromaDB instance.
 """
 
 def main():
     # ---------------------------------------------------------
     # 1. Initialization: Loading Models & DB
     # ---------------------------------------------------------
-    print("--- Phase 1: Initializing Pipeline ---")
+    print("--- Phase 2: Initializing Forensic Pipeline ---")
     
-    print("Loading Text Model (all-MiniLM-L6-v2)...")
-    # used for processing 'Premis' text descriptions
+    print("Loading Text Model (SBERT: all-MiniLM-L6-v2)...")
     text_model = SentenceTransformer('all-MiniLM-L6-v2')
     
-    print("Loading Image Model (clip-ViT-B-32)...")
-    # CLIP model used for generating multi-modal image embeddings
+    print("Loading Image Model (CLIP: clip-ViT-B-32)...")
     image_model = SentenceTransformer('clip-ViT-B-32')
 
     print("Initializing ChromaDB Client (./cold_case_db)...")
-    # Persistent client ensures the database is saved to disk
     client = chromadb.PersistentClient(path="./cold_case_db")
 
-    # Creating separate collections for modular retrieval
-    print("Creating collections...")
-    text_collection = client.get_or_create_collection(name="text_cases")
-    image_collection = client.get_or_create_collection(name="image_cases")
+    # Wipe existing collections to ensure a clean slate for gritty forensic data
+    print("Wiping existing collections...")
+    collections_to_delete = ["text_cases", "image_cases", "forensic_enhanced", "forensic_text"]
+    for col_name in collections_to_delete:
+        try:
+            client.delete_collection(name=col_name)
+            print(f"Deleted old collection: {col_name}")
+        except Exception:
+            # Skip if collection doesn't exist
+            pass
+
+    # Creating fresh forensic-enhanced collections
+    print("Creating new forensic collections...")
+    image_collection = client.create_collection(name="forensic_enhanced")
+    text_collection = client.create_collection(name="forensic_text")
 
     # ---------------------------------------------------------
     # 2. Data Loading & Cleaning
     # ---------------------------------------------------------
-    csv_path = 'fused_dataset_800.csv'
+    csv_path = 'fused_dataset_v2.csv'
     if not os.path.exists(csv_path):
-        print(f"Error: {csv_path} not found.")
+        print(f"Error: {csv_path} not found. Please run mapping.py first.")
         return
 
     print(f"Loading dataset from {csv_path}...")
     df = pd.read_csv(csv_path)
 
     # Clean data: Drop rows with missing critical information
-    initial_count = len(df)
     df = df.dropna(subset=['DR_NO', 'Premis', 'Crime_Scene_Image_Path'])
     final_count = len(df)
     
-    if initial_count != final_count:
-        print(f"Dropped {initial_count - final_count} rows with missing values.")
-
     # ---------------------------------------------------------
     # 3. Vectorization Loop: Text and Image Pipelines
     # ---------------------------------------------------------
-    print(f"Starting Vectorization of {final_count} cases...")
+    print(f"Starting Vectorization of {final_count} forensic cases...")
     
-    # Iterate through each row to populate the vector database
     for index, row in tqdm(df.iterrows(), total=final_count, desc="Processing Cases"):
         case_id = str(row['DR_NO'])
         premis_text = row['Premis']
         image_path = row['Crime_Scene_Image_Path']
 
-        # --- Text Pipeline ---
-        # Generate embedding for the crime scene location description
+        # --- Text Pipeline (SBERT) ---
         text_embedding = text_model.encode(premis_text).tolist()
-        
-        # Add to text collection with metadata for traceability
         text_collection.add(
             embeddings=[text_embedding],
             documents=[premis_text],
@@ -77,38 +76,39 @@ def main():
             ids=[case_id]
         )
 
-        # --- Image Pipeline ---
+        # --- Image Pipeline (CLIP) ---
         try:
-            # Check if image exists before processing
             if os.path.exists(image_path):
-                # Load image using PIL
                 img = Image.open(image_path)
-                
-                # Generate embedding using the CLIP model
                 img_embedding = image_model.encode(img).tolist()
                 
-                # Add to image collection
                 image_collection.add(
                     embeddings=[img_embedding],
-                    metadatas=[{"case_id": case_id, "image_path": image_path}],
+                    metadatas=[{"case_id": case_id, "image_path": image_path, "text_summary": premis_text}],
                     ids=[case_id]
                 )
             else:
                 print(f"\nWarning: Image not found for Case ID {case_id} at {image_path}")
         except Exception as e:
-            # Silent fail or brief warning as per requirements to keep the loop running
             print(f"\nError processing image for Case ID {case_id}: {e}")
             continue
+
+        # Optimization: Track progress every 50 rows
+        if (index + 1) % 50 == 0:
+            print(f"\n>>> Progress Update: Completed {index + 1} rows. CLIP embedding generation is active.")
 
     # ---------------------------------------------------------
     # 4. Output: Success Confirmation
     # ---------------------------------------------------------
     print("\n" + "="*50)
-    print("SUCCESS: Vectorization Pipeline Phase 1 Complete.")
-    print(f"Database successfully saved to: {os.path.abspath('./cold_case_db')}")
-    print(f"Text Collection Count: {text_collection.count()}")
-    print(f"Image Collection Count: {image_collection.count()}")
+    print("SUCCESS: Forensic Vectorization Pipeline Complete.")
+    print(f"Text Collection ('forensic_text') Count: {text_collection.count()}")
+    print(f"Image Collection ('forensic_enhanced') Count: {image_collection.count()}")
     print("="*50)
+
+if __name__ == "__main__":
+    main()
+
 
 if __name__ == "__main__":
     main()

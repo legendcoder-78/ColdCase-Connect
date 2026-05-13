@@ -54,14 +54,17 @@ analyzeBtn.addEventListener('click', async () => {
             body: formData
         });
 
-        if (!response.ok) throw new Error("API Failure");
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`API Error ${response.status}: ${errorText || response.statusText}`);
+        }
 
         const data = await response.json();
         renderResults(data);
 
     } catch (error) {
-        console.error(error);
-        alert("SYSTEM ERROR: Analysis Engine Offline. Ensure backend is running at :8000");
+        console.error("NETWORK/API ERROR:", error);
+        alert(`INVESTIGATION FAILED: ${error.message}\n\nCheck browser console for details.`);
     } finally {
         analyzeBtn.disabled = false;
         analyzeBtn.innerHTML = `<span>RUN INVESTIGATIVE ANALYSIS</span><i data-lucide="zap" class="w-5 h-5"></i>`;
@@ -130,7 +133,7 @@ function renderResults(data) {
                     <div class="space-y-2">
                         <p class="text-[10px] font-bold text-gray-500 uppercase">Archived Match</p>
                         <div class="aspect-square bg-black rounded-lg overflow-hidden border border-[#2D343F]">
-                            <img src="${match.image_path || 'https://via.placeholder.com/400?text=No+Image'}" class="w-full h-full object-cover">
+                            <img src="${match.image_path ? `http://127.0.0.1:8000/${match.image_path}` : 'https://via.placeholder.com/400?text=No+Image'}" class="w-full h-full object-cover">
                         </div>
                     </div>
                     <div class="flex flex-col justify-between">
