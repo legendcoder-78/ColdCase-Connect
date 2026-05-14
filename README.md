@@ -14,7 +14,6 @@ The platform features a custom-built, high-fidelity dashboard designed for low-l
 - **Divergence Detection:** Automatically flags cases where visual evidence contradicts the textual narrative—a critical signal for **staged crime scenes** or copycat behavior.
 - **Pixel-Scanning UI:** Productive friction via a custom "pixel-scanner" animation that visualizes the AI's deep analysis of evidence.
 
----
 
 ## 🛠 The Tech Stack
 
@@ -236,3 +235,5 @@ data_prep.py → mapping.py → build_database.py → main.py (serves the API)
 
 **Developed for the 2026 Forensic Intelligence Hackathon.**
 *Note: This platform is a prototype designed for investigative research.*
+# ColdCase-Connect
+An AI-powered multimodal forensic intelligence system that semantically matches crime cases across text and images to uncover hidden patterns, serial links, and staged crimes.
