@@ -80,9 +80,31 @@ body {
 .metric-ring .bg {
     stroke: var(--border-dim);
 }
-.metric-ring .progress {
-    stroke: var(--cyan-accent);
-    stroke-dasharray: 176;
-    stroke-dashoffset: 176;
-    transition: stroke-dashoffset 1s ease-out;
+/* Forensic Synthesis Formatting */
+#synthesis-content {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    line-height: 1.6;
+}
+
+#synthesis-content ul {
+    margin-top: 1rem;
+    list-style-type: none;
+    padding-left: 0;
+}
+
+#synthesis-content li {
+    margin-bottom: 0.75rem;
+    padding-left: 1.5rem;
+    position: relative;
+    border-left: 2px solid var(--cyan-accent);
+    background: rgba(0, 210, 255, 0.03);
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+#synthesis-content strong {
+    color: var(--cyan-accent);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
 }

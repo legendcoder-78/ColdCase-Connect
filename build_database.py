@@ -45,7 +45,7 @@ def main():
     # ---------------------------------------------------------
     # 2. Data Loading & Cleaning
     # ---------------------------------------------------------
-    csv_path = 'fused_dataset_v2.csv'
+    csv_path = 'fused_dataset_v3_final.csv'
     if not os.path.exists(csv_path):
         print(f"Error: {csv_path} not found. Please run mapping.py first.")
         return
@@ -105,10 +105,6 @@ def main():
     print(f"Text Collection ('forensic_text') Count: {text_collection.count()}")
     print(f"Image Collection ('forensic_enhanced') Count: {image_collection.count()}")
     print("="*50)
-
-if __name__ == "__main__":
-    main()
-
 
 if __name__ == "__main__":
     main()

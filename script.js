@@ -78,9 +78,29 @@ function renderResults(data) {
     emptyState.classList.add('hidden');
     resultsContainer.innerHTML = ''; // Clear previous results
 
-    // 1. Forensic Synthesis with Typing Effect
+    // 1. Forensic Synthesis with Formatting
     synthesisCard.classList.remove('hidden');
-    typeWriter(data.forensic_synthesis, synthesisContent);
+    
+    // Process text to handle bullets and bolding before typing
+    let formattedText = data.forensic_synthesis;
+    
+    // Convert * or - bullet points to list items
+    if (formattedText.includes('*') || formattedText.includes('-')) {
+        const lines = formattedText.split(/\n/).filter(line => line.trim() !== '');
+        let htmlOutput = '<ul class="space-y-4">';
+        lines.forEach(line => {
+            const cleanLine = line.replace(/^[\s*-]+/, '').trim();
+            if (cleanLine) {
+                // Bold anything before a colon
+                const boldedLine = cleanLine.replace(/^([^:]+):/, '<strong>$1:</strong>');
+                htmlOutput += `<li>${boldedLine}</li>`;
+            }
+        });
+        htmlOutput += '</ul>';
+        synthesisContent.innerHTML = htmlOutput;
+    } else {
+        synthesisContent.textContent = formattedText;
+    }
 
     // 2. Result Cards
     if (data.top_matches.length === 0) {

@@ -114,6 +114,11 @@ async def analyze_case(
             include=["metadatas", "distances"]
         )
 
+        # --- Debugging: Log Raw Distances ---
+        print("\n--- DEBUG: RAW IMAGE MATCH DISTANCES ---")
+        for idx, dist_list in enumerate(image_results['distances']):
+            print(f"Image {idx+1} Top 5 Distances: {dist_list[:5]}")
+
         # ---------------------------------------------------------
         # 4. Max Pooling (Best Evidence Fusion)
         # ---------------------------------------------------------
@@ -161,6 +166,7 @@ async def analyze_case(
             # Intersect with Best Evidence from visual queries
             if case_id in best_visual_matches:
                 merged_matches[case_id]["visual_score"] = best_visual_matches[case_id]["visual_score"]
+                # Use the path from the visual match if available
                 merged_matches[case_id]["image_path"] = best_visual_matches[case_id]["image_path"]
 
         # Add visual-only matches that weren't in the top 60 text results
@@ -179,21 +185,32 @@ async def analyze_case(
         for case_id, data in merged_matches.items():
             combined_score = (data["text_score"] + data["visual_score"]) / 2
             divergence_delta = abs(data["visual_score"] - data["text_score"])
-            divergence_flag = divergence_delta > 40.0
+            
+            # --- Smarter Divergence Logic ---
+            # 1. High-Score Exception: If combined > 70%, no flag (high evidence consistency)
+            # 2. Minimum Text Floor: Only trigger if text_score < 30% while visual is high
+            # 3. Threshold Adjustment: Increase delta sensitivity from 40 to 50
+            divergence_flag = False
+            if combined_score <= 70.0:
+                if divergence_delta > 50.0 and data["text_score"] < 30.0:
+                    divergence_flag = True
 
             # Confidence Threshold Check (15%)
             if combined_score < 15.0:
                 continue
 
-            # Clean up the image path for the web (Relative to project root)
-            web_image_path = data["image_path"]
-            if web_image_path:
-                # Convert './train/category/img.jpg' to 'train/category/img.jpg'
-                web_image_path = web_image_path.lstrip("./").lstrip("/")
-                if not web_image_path.startswith("train/"):
-                    # Ensure it starts with train/ if it was something else
-                    if "train/" in web_image_path:
-                        web_image_path = web_image_path[web_image_path.find("train/"):]
+            # --- Robust Path Sanitization ---
+            # Stored paths like './train/cat/img.jpg' or 'train/cat/img.jpg'
+            # need to be served via /train/ mount.
+            raw_path = data["image_path"]
+            web_image_path = ""
+            if raw_path:
+                # Remove leading dots/slashes and isolate the 'train/' portion
+                sanitized = raw_path.replace("\\", "/").lstrip("./")
+                if "train/" in sanitized:
+                    web_image_path = sanitized[sanitized.find("train/"):]
+                else:
+                    web_image_path = f"train/{sanitized}"
 
             raw_results.append({
                 "case_id": case_id,

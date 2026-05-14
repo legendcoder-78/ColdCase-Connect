@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ColdCase Connect | Intelligence Platform</title>
+    <style>
+        :root {
+            --bg-midnight: #0B0E14;
+            --card-bg: rgba(21, 25, 33, 0.7);
+            --cyan-accent: #00D2FF;
+            --border-dim: #2D343F;
+            --text-main: #E0E0E0;
+            --font-main: 'Inter', -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-midnight);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Hero Section */
+        header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .glow-text {
+            font-size: 5rem;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            color: var(--cyan-accent);
+            text-shadow: 0 0 20px rgba(0, 210, 255, 0.5);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #A0A0A0;
+            margin-bottom: 3rem;
+            max-width: 700px;
+        }
+
+        .btn-launch {
+            background: transparent;
+            border: 2px solid var(--cyan-accent);
+            color: var(--cyan-accent);
+            padding: 1rem 2.5rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
+        }
+
+        .btn-launch:hover {
+            background: var(--cyan-accent);
+            color: var(--bg-midnight);
+            box-shadow: 0 0 30px rgba(0, 210, 255, 0.5);
+            transform: translateY(-5px);
+        }
+
+        /* Visual Tagline Section */
+        .tagline-section {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 6rem;
+        }
+
+        .tag-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-dim);
+            padding: 1rem 1.5rem;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: var(--cyan-accent);
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .tag-card:hover {
+            border-color: var(--cyan-accent);
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+        }
+
+        /* Core Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 6rem;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-dim);
+            padding: 2.5rem;
+            border-radius: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(0, 210, 255, 0.4);
+        }
+
+        .feature-card h3 {
+            color: var(--cyan-accent);
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+            text-transform: uppercase;
+        }
+
+        .feature-card p {
+            color: #A0A0A0;
+            font-size: 1rem;
+        }
+
+        /* Tech Stack Section */
+        .tech-stack {
+            text-align: center;
+            padding-bottom: 6rem;
+        }
+
+        .tech-title {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: 2rem;
+        }
+
+        .badge-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .tech-badge {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            background: #1A1F26;
+            border: 1px solid var(--border-dim);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            color: #A0A0A0;
+        }
+
+        /* Top Navigation / Logo */
+        .top-nav {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .logo-box {
+            width: 40px;
+            height: 40px;
+            background: var(--cyan-accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-text {
+            font-family: var(--font-mono);
+            font-size: 1.25rem;
+            font-weight: bold;
+            letter-spacing: -0.05em;
+            color: var(--cyan-accent);
+        }
+
+        @media (max-width: 768px) {
+            .glow-text { font-size: 3rem; }
+            .subtitle { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="nodesCanvas"></canvas>
+
+    <div class="container">
+        <!-- Hero Section -->
+        <header>
+            <h1 class="glow-text">ColdCase Connect</h1>
+            <p class="subtitle">AI-Powered Multi-Modal Cold Case Intelligence Platform</p>
+            <a href="login.html" class="btn-launch">Launch Investigation</a>
+        </header>
+
+        <!-- Visual Tagline Section -->
+        <div class="tagline-section">
+            <div class="tag-card">Semantic Intelligence</div>
+            <div class="tag-card">Evidence Matching</div>
+            <div class="tag-card">Pattern Correlation</div>
+            <div class="tag-card">Divergence Detection</div>
+        </div>
+
+        <!-- Core Features Grid -->
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>Multi-Modal Vector Search</h3>
+                <p>Seamlessly fuses textual narratives and visual evidence into a high-dimensional vector space for deep-pattern discovery.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Best Evidence Fusion</h3>
+                <p>Advanced multi-image aggregation logic identifying patterns across fragmented visual inputs to prioritize critical matches.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Divergence Detection</h3>
+                <p>Intelligence-driven flagging system identifying behavioral inconsistencies between investigator narratives and visual crime scene data.</p>
+            </div>
+        </div>
+
+        <!-- Tech Stack Section -->
+        <div class="tech-stack">
+            <p class="tech-title">System Architecture</p>
+            <div class="badge-container">
+                <span class="tech-badge">[FastAPI]</span>
+                <span class="tech-badge">[Python]</span>
+                <span class="tech-badge">[Gemini 2.5 Flash]</span>
+                <span class="tech-badge">[ChromaDB]</span>
+                <span class="tech-badge">[Vanilla JS]</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('nodesCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let particles = [];
+        const particleCount = 80;
+        const maxDistance = 150;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.radius = Math.random() * 2 + 1;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = Math.random() > 0.5 ? '#FFFFFF' : '#00D2FF';
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            particles = [];
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < maxDistance) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(0, 210, 255, ${1 - distance / maxDistance})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', init);
+        init();
+        animate();
+    </script>
+</body>
+</html>

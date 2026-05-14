@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ColdCase Connect | Auth Portal</title>
+    <style>
+        :root {
+            --bg-midnight: #0B0E14;
+            --card-bg: #151921;
+            --cyan-accent: #00D2FF;
+            --border-dim: #2D343F;
+            --text-main: #E0E0E0;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-midnight);
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-dim);
+            padding: 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--cyan-accent);
+            border-radius: 8px 8px 0 0;
+        }
+
+        .header {
+            margin-bottom: 2.5rem;
+        }
+
+        .header h2 {
+            font-size: 0.9rem;
+            color: var(--cyan-accent);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.75rem;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.1em;
+        }
+
+        .input-field {
+            width: 100%;
+            background: #0B0E14;
+            border: 1px solid var(--border-dim);
+            padding: 1rem;
+            color: var(--cyan-accent);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-field:focus {
+            border-color: var(--cyan-accent);
+        }
+
+        .btn-auth {
+            width: 100%;
+            background: transparent;
+            border: 1px solid var(--cyan-accent);
+            color: var(--cyan-accent);
+            padding: 1.2rem;
+            font-family: var(--font-mono);
+            font-weight: bold;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-auth:hover {
+            background: rgba(0, 210, 255, 0.1);
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.2);
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 15px;
+            background-color: var(--cyan-accent);
+            margin-left: 5px;
+            animation: blink 1s infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .footer-note {
+            margin-top: 2rem;
+            font-size: 0.65rem;
+            color: #444;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Terminal Prompt Style */
+        .prompt {
+            color: var(--cyan-accent);
+            margin-right: 10px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            background: #0B0E14;
+            border: 1px solid var(--border-dim);
+            padding-left: 1rem;
+        }
+
+        .input-wrapper .input-field {
+            border: none;
+            padding-left: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="header">
+            <h2>RESTRICTED ACCESS: COLDCASE CONNECT</h2>
+        </div>
+
+        <div class="input-group">
+            <label>Secret Identity Username</label>
+            <div class="input-wrapper">
+                <span class="prompt">></span>
+                <input type="text" class="input-field" placeholder="USER_AUTH_KEY">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Department ID</label>
+            <div class="input-wrapper">
+                <span class="prompt">></span>
+                <input type="password" class="input-field" placeholder="********">
+            </div>
+        </div>
+
+        <button id="authBtn" class="btn-auth">Authenticate & Access Database</button>
+
+        <div class="footer-note">
+            Unauthorized access is subject to federal prosecution. IP logged.
+        </div>
+    </div>
+
+    <script>
+        const authBtn = document.getElementById('authBtn');
+        
+        authBtn.addEventListener('click', () => {
+            const originalText = authBtn.innerText;
+            authBtn.innerHTML = 'Verifying Credentials<span class="cursor"></span>';
+            authBtn.disabled = true;
+            authBtn.style.borderColor = '#666';
+            authBtn.style.color = '#666';
+
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1500);
+        });
+    </script>
+</body>
+</html>

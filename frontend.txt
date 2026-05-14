@@ -1,91 +1,45 @@
-To give your project a professional, "Law Enforcement Command Center" feel, you should move away from basic web aesthetics and lean into a high-contrast, data-heavy, yet clean UI.
+Act as an Expert UI/UX Developer. I am expanding the frontend for "ColdCase Connect" (a forensic intelligence platform). 
 
-Here is the design blueprint for the **ColdSync AI** frontend and UX.
+CURRENT PROJECT STATE:
+- My main application dashboard already exists in a file named `index.html`. 
+- DO NOT MODIFY `index.html` under any circumstances.
+- DO NOT TOUCH ANY PYTHON/BACKEND FILES. 
 
-### **1. The Tech Stack (The "Pro-Grade" Setup)**
+YOUR TASK:
+Create two entirely new, static files: `landing.html` and `login.html`. 
+Use ONLY Vanilla HTML5, CSS3, and JavaScript. Keep all CSS/JS embedded within the respective HTML files for simplicity.
 
-Since you want a polished, custom feel, I recommend this combination:
+--- ### DESIGN SYSTEM: "MIDNIGHT TACTICAL" ### ---
+- Background: Deep Charcoal/Navy-Black (#0B0E14)
+- Primary Accent: Electric Cyan (#00D2FF) for active states/glows.
+- Font: Clean sans-serif for body, Monospace for data/tags.
+- UI Elements: Subtle borders (1px solid #2D343F), glassmorphism, and thin-stroke icons.
 
-* **Core:** **HTML5 / CSS3 / JavaScript (ES6+)**.
-* **Styling:** **Tailwind CSS**. It’s the fastest way to build custom "Dark Mode" dashboards without writing thousands of lines of CSS.
-* **Icons:** **Lucide Icons** or **FontAwesome**. Use thin-stroke, technical-looking icons.
-* **Animations:** **Framer Motion** (if using React) or simple **CSS Keyframes**.
-* **Data Visualization:** **Chart.js** for the intelligence patterns page.
+--- ### PAGE 1: landing.html (The Front Door) ### ---
+1. HERO SECTION:
+   - Full-screen HTML5 Canvas background animation: "Connecting Nodes" (white/cyan dots drifting slowly, drawing thin lines when close).
+   - Main Heading: "ColdCase Connect" (Glowing cyan).
+   - Subtitle: "AI-Powered Multi-Modal Cold Case Intelligence Platform".
+   - Primary Button: "Launch Investigation" -> MUST link to `login.html`.
+2. VISUAL TAGLINE SECTION:
+   - Flexbox of glowing tactical cards: [Semantic Intelligence], [Evidence Matching], [Pattern Correlation], [Divergence Detection].
+3. CORE FEATURES (CSS Grid of Glassmorphism Cards):
+   - Multi-Modal Vector Search: Fuses textual and visual evidence.
+   - Best Evidence Fusion: Aggregates max scores from multi-image uploads.
+   - Divergence Detection: Flags inconsistencies between M.O. and visuals.
+4. TECH STACK (Monospace Badges):
+   - [FastAPI] [Python] [Gemini 2.5 Flash] [ChromaDB] [Vanilla JS]
 
----
+--- ### PAGE 2: login.html (The Auth Portal) ### ---
+1. AESTHETIC: Highly secure, centered terminal login box.
+2. TITLE: "RESTRICTED ACCESS: COLDCASE CONNECT"
+3. INPUTS: "Secret Identity Username" (text) and "Department ID" (password). Styled like terminal prompts.
+4. ACTION BUTTON: "Authenticate & Access Database".
+5. JAVASCRIPT ROUTING LOGIC (CRITICAL - KEEP IT FAKE):
+   - You can keep the authorization logic fake as of now. Do not write any backend auth code. 
+   - Add a simple event listener to the button. 
+   - On click, change the button text to "Verifying Credentials..." and add a blinking cursor effect.
+   - Wait exactly 1500ms using `setTimeout()`.
+   - Execute routing: `window.location.href = 'index.html';` 
 
-### **2. The UX Aesthetic: "Midnight Tactical"**
-
-* **Color Palette:**
-* **Background:** Deep Charcoal or Navy-Black (`#0B0E14`).
-* **Primary Accent:** "Electric Cyan" (`#00D2FF`) for active states and "System OK" statuses.
-* **Alert Color:** "Warning Red" (`#FF4B4B`)—strictly reserved for the **Divergence Flag**.
-* **Text:** Off-white/Grey (`#E0E0E0`) to reduce eye strain during long "investigations."
-
-
-* **Borders & Surfaces:** Use very subtle borders (`1px solid #2D343F`) and glassmorphism (slight background blur) for overlaying cards.
-
----
-
-### **3. Navigation Bar Architecture**
-
-A **Sidebar Navigation** is mandatory for this type of tool. It should be fixed to the left side and occupy roughly 15-20% of the screen width.
-
-**The Sidebar Structure:**
-
-* **Top:** Company Logo (a stylized shield or magnifying glass) and "COLDSYNC AI" in a monospaced font.
-* **Middle (Navigation Links):**
-1. **Forensic Lab (Home):** The main analysis workspace.
-2. **Case Vault:** Browsable list of the 800+ historical cases.
-3. **Pattern Intel:** Visualized trends and heatmaps.
-
-
-* **Bottom:** Investigator Profile (e.g., "Officer #8001") and a "System Status" indicator (showing a green pulse for "Database Connected").
-
----
-
-### **4. Page-by-Page UX Design**
-
-#### **The Analysis Workspace (Home)**
-
-* **Input Zone (Left Third):** A vertical column where the investigator uploads the photo and types the M.O. summary.
-* **Intelligence Feed (Right Two-Thirds):**
-* **Top Area:** "Forensic Synthesis" box. This should appear as if the AI is typing it in real-time.
-* **Results Area:** Cards that slide in from the bottom. Each card displays the "Combined Score" as a circular progress ring.
-* **Comparison Mode:** When a match is clicked, the UI should split perfectly in half—Original Evidence on the left, Historical Case on the right—for direct visual comparison.
-
-
-
-#### **The Case Vault (Data Browser)**
-
-* A clean, searchable table.
-* Instead of standard pagination, use **"Infinite Scroll"** to keep the investigator in the flow.
-* Filter chips at the top (e.g., [Homicide], [Burglary], [High Divergence]).
-
----
-
-### **5. Transitions: Smooth vs. Immediate**
-
-This is where the "feel" of the software is determined. You want a mix of both to imply a "Fast but Precise" system.
-
-* **Immediate Transitions:**
-* **Button Clicks:** Navigation between pages should be instant. Law enforcement tools should never feel "lazy" or slow.
-* **Tab Switching:** Instant.
-
-
-* **Smooth (Micro-interactions):**
-* **The Search Process:** When "Run Analysis" is clicked, use a **Smooth Scanning Animation** (a horizontal blue line moving up and down over the uploaded image). This creates "productive friction"—it makes the user feel like the AI is actually *working* hard on the pixels.
-* **Divergence Alert:** If a flag is triggered, don't just show it. Have it **Fade In with a slight pulse** to grab the eye.
-* **Card Hover:** A very subtle lift or glow when the mouse moves over a case match.
-
-
-
----
-
-### **6. The "Wow" Factor UX Features**
-
-* **The "Divergence Delta" Meter:** Don't just show a number. Use a horizontal gauge bar where the "Text Score" and "Visual Score" are two markers. If they are far apart, the space between them glows red.
-* **Terminal Output:** At the bottom of the screen, have a tiny, collapsible "Log" that shows the raw technical steps (e.g., `[INFO] CLIP Embedding generated... [INFO] Querying ChromaDB...`). It makes the tool feel more authentic and transparent.
-
-**Summary of the UX Goal:**
-The user should feel like they are not just using a website, but operating a **powerful piece of forensic hardware.** Focus on dark backgrounds, vibrant data accents, and a sidebar-driven workflow.
+Please output the complete, ready-to-run code for `landing.html` and `login.html`.

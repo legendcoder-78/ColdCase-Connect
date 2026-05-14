@@ -1,19 +1,22 @@
-Act as a Full-Stack Developer. My ColdSync AI dashboard is failing to render 'Archived Match' images (they show broken icons), although the 'Input Evidence' renders fine. 
+Act as a Full-Stack Engineer. I want to upgrade my ColdSync AI project to support "Multi-Image Context Matching." 
 
-I need to fix the Static File Serving between FastAPI and the HTML/JS frontend.
+Currently, the user uploads 1 text description and 1 image. I want them to be able to upload 1 text description and MULTIPLE images. The system should calculate the "Best Visual Match" out of the uploaded batch for each archived case.
 
-Requirements:
+Please provide the updated code for both the backend (main.py) and the frontend.
 
-1. Update main.py:
-   - Import 'StaticFiles' from 'fastapi.staticfiles'.
-   - Add 'app.mount("/train", StaticFiles(directory="train"), name="train")' immediately after the CORS middleware. This will allow the browser to access images via 'http://127.0.0.1:8000/train/...'.
+Requirements for Backend (main.py):
+1. Endpoint Signature: Update the '/analyze' endpoint to accept multiple files: `files: List[UploadFile] = File(...)`.
+2. Multi-Embedding Extraction: Loop through the uploaded 'files', convert each to RGB, and generate a CLIP visual embedding for each one.
+3. ChromaDB Batch Query: Pass the list of all generated visual embeddings into ChromaDB's 'collection.query(query_embeddings=[...])' simultaneously.
+4. "Best of N" Aggregation Logic (CRITICAL): 
+   - ChromaDB will return results for EACH uploaded image.
+   - You must aggregate these results. Group them by the archived 'Case ID' (or database ID).
+   - For each archived case, find the MAXIMUM visual similarity score across all the uploaded images.
+   - Use this MAX visual score to calculate the final 'combined_score' and 'divergence_flag'.
+   - Return the standard JSON response, sorted by the highest combined score.
 
-2. Update the /analyze Endpoint in main.py:
-   - Ensure the 'image_path' returned in the JSON results is relative to the project root (e.g., "train/street/image_01.jpg"). 
+Requirements for Frontend (HTML/JS):
+1. HTML: Update the file input element to include the 'multiple' attribute so the user can select multiple files from their OS.
+2. JavaScript: Update the 'FormData' appending logic. Instead of appending a single file, iterate through 'fileInput.files' and append each one to the 'files' key so FastAPI receives the list properly.
 
-3. Update the JavaScript (script.js or index.html):
-   - Locate where the 'Archived Match' <img> tag is created.
-   - Update the 'src' attribute so it prefixes the backend URL. 
-   - Example: imgElement.src = `http://127.0.0.1:8000/${match.image_path}`;
-
-Please provide the specific code blocks for main.py and the JavaScript rendering logic to ensure these archived images appear correctly.
+Output the specific Python and JavaScript code blocks required to implement this.
